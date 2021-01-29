@@ -1,0 +1,14 @@
+# [% basename %] 
+# copyright [% year %] Nikolaj Lepka <slench102@gmail.com>
+use [% version %];
+use warnings;
+use Getopt::Long;
+use autodie;
+
+GetOptions();
+
+# code goes here.
+
+__END__
+=head1 [% pretty_name %]
+Documentation for [% pretty_name %] goes here.

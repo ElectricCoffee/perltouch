@@ -1,0 +1,15 @@
+# [% basename %]
+# copyright [% year %] Nikolaj Lepka <slench102@gmail.com>
+package [% pretty_name %];
+
+use [% version %];
+use warnings;
+use Carp;
+
+# code goes here.
+
+1;
+
+__END__
+=head1 [% pretty_name %]
+Documentation for [% pretty_name %] goes here.
