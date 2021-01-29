@@ -21,17 +21,26 @@ GetOptions (
 $is_file = 1 
     unless $is_class || $is_module || $is_script;
 
-my $year = localtime->year + 1900;
+my $template = Template->new({
+    INCLUDE_PATH => './templates'
+});
 
-`perl -v` =~ m/(v\d+\.\d+)\.\d+/gi;
-my $version = $1;
+# TODO: refactor this into something more elegant.
+my $template_file = $is_file || $is_script  ? 'file.pl.tt'
+                  : $is_module              ? 'module.pm.tt'
+                  : $is_class               ? 'class.pm.tt'
+                  : die 'Could not determine file type.'; # shouldn't be possible.
 
-my $template = Template->new;
+my $extension = $is_file                ? '.pl'
+              : $is_script              ? ''
+              : $is_module || $is_class || '.pm'
 
 for my $file (@ARGV) {
     # if the file doesn't already exist or the user wishes to overwrite it
     if (! -e $file || Util::prompt("The file $file already exists. Overwrite it?")) {
-        
+        my $prepped = FilePrep->new(file_name => $file);
+
+        $template->process($template_file, $prepped->vars, $prepped->basename);
     }
 }
 
