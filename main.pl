@@ -10,37 +10,46 @@ use autodie;
 
 use Util;
 
+use constant {
+    CLASS_T     => 'class',
+    FILE_T      => 'file',
+    MODULE_T    => 'module',
+    SCRIPT_T    => 'script',
+}
+
+my %template_and_extensions = (
+    &CLASS_T    => ['class.pm.tt', '.pm'],
+    &FILE_T     => ['file.pl.tt', '.pl'],
+    &MODULE_T   => ['module.pm.tt', '.pm'],
+    &SCRIPT_T   => ['file.pl.tt', ''],
+)
+
+my $template_type;
+
 GetOptions (
-    'package|module'    => \my $is_module,
-    class               => \my $is_class,
-    file                => \my $is_file,
-    script              => \my $is_script,
+    class               => sub { $template_type = CLASS_T  }
+    file                => sub { $template_type = FILE_T   }
+    'package|module'    => sub { $template_type = MODULE_T }
+    script              => sub { $template_type = SCRIPT_T }
 );
 
-# assume you want a file if nothing else has been chosen.
-$is_file = 1 
-    unless $is_class || $is_module || $is_script;
+$template_type ||= FILE_T;
 
 my $template = Template->new({
     INCLUDE_PATH => './templates'
 });
 
-# TODO: refactor this into something more elegant.
-my $template_file = $is_file || $is_script  ? 'file.pl.tt'
-                  : $is_module              ? 'module.pm.tt'
-                  : $is_class               ? 'class.pm.tt'
-                  : die 'Could not determine file type.'; # shouldn't be possible.
-
-my $extension = $is_file                ? '.pl'
-              : $is_script              ? ''
-              : $is_module || $is_class || '.pm'
+my ($temp_f, $temp_ext) = $template_and_extensions{$template_type}->@*;
 
 for my $file (@ARGV) {
     # if the file doesn't already exist or the user wishes to overwrite it
     if (! -e $file || Util::prompt("The file $file already exists. Overwrite it?")) {
-        my $prepped = FilePrep->new(file_name => $file);
+        my $prepped = FilePrep->new(file_name => $file, file_ext => $temp_ext);
+        my $path = $prepped->out_path;
 
-        $template->process($template_file, $prepped->vars, $prepped->basename);
+        say "Writing $path..."
+        $template->process($temp_f, $prepped->vars, $path) 
+            or warn "Could not write $path!";
     }
 }
 
