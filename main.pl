@@ -27,10 +27,11 @@ my %template_and_extensions = (
 my $template_type;
 
 GetOptions (
-    class               => sub { $template_type = CLASS_T  }
-    file                => sub { $template_type = FILE_T   }
-    'package|module'    => sub { $template_type = MODULE_T }
-    script              => sub { $template_type = SCRIPT_T }
+    class               => sub { $template_type = CLASS_T  },
+    file                => sub { $template_type = FILE_T   },
+    'package|module'    => sub { $template_type = MODULE_T },
+    script              => sub { $template_type = SCRIPT_T },
+    force_ext           => \my $force_ext,
 );
 
 $template_type ||= FILE_T;
@@ -45,7 +46,7 @@ for my $file (@ARGV) {
     # if the file doesn't already exist or the user wishes to overwrite it
     if (! -e $file || Util::prompt("The file $file already exists. Overwrite it?")) {
         my $prepped = FilePrep->new(file_name => $file, file_ext => $temp_ext);
-        my $path = $prepped->out_path;
+        my $path = $prepped->out_path($force_ext);
 
         say "Writing $path..."
         $template->process($temp_f, $prepped->vars, $path) 

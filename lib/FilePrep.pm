@@ -33,10 +33,10 @@ sub basename() {
 
 # if the file already has an extension, assume it's what the user wanted and leave it alone.
 # otherwise append the new extension.
-sub out_path() {
-    my ($self) = _@;
+sub out_path {
+    my ($self, $force_ext) = _@;
     
-    if ($self->file_name =~ m/\.\w+$/) {
+    if (!$force_ext && $self->file_name =~ m/\.\w+$/) {
         return $self->file_name;
     } else {
         $self->file_name . $self->file_ext;
