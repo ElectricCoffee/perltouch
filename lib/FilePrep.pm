@@ -12,6 +12,7 @@ sub _get_default_version {
 }
 
 has file_name => (is => 'ro', required => 1);
+has file_ext  => (is => 'ro', default  => sub {'.pl'});
 
 has year => (
     is => 'ro', 
@@ -28,6 +29,18 @@ has version => (
 sub basename() {
     my ($self) = _@;
     basename($self->file_name)
+}
+
+# if the file already has an extension, assume it's what the user wanted and leave it alone.
+# otherwise append the new extension.
+sub out_path() {
+    my ($self) = _@;
+    
+    if ($self->file_name =~ m/\.\w+$/) {
+        return $self->file_name;
+    } else {
+        $self->file_name . $self->file_ext;
+    }
 }
 
 # Returns the "pretty name" of the file_name field.
