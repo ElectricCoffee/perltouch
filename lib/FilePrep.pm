@@ -60,3 +60,34 @@ sub vars {
         year        => $self->year,
     }
 }
+
+__END__
+=head1 File Prep
+A class for preparing the file name to become the variables used as input for the templating engine.
+=over 4
+=item B<new (file_name =E<gt> FILE_NAME, file_ext =E<gt> FILE_EXT, version =E<gt> VERSION, year =E<gt> YEAR)>
+Creates a new instance of the FilePrep class.
+=over 4
+=item B<file_name>
+The file name of the file that is going to be generated.
+=item B<file_ext> (optional)
+The extension of the file to be generated.
+Leaving it out will default it to '.pl'.
+=item B<version> (optional)
+The Perl version you wish to target.
+Leaving it out will cause FilePrep to target the version currently installed.
+=item B<year> (optional)
+The copyright year.
+Leaving it out will default to the current year.
+=back
+=item B<basename()>
+Returns the basename of the supplied file name.
+=item B<out_path(FORCE_EXT)>
+Generates an out path based on the file name and the file extension.
+If the file name already has an extension, it will not supply one unless FORCE_EXT is true.
+=item B<pretty_name()>
+Creates a "pretty" CamelCased name.
+=item B<vars()>
+Generates the output hash ref expected by the templating engine.
+=back
+=cut
