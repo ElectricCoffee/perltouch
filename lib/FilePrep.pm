@@ -1,7 +1,7 @@
 package FilePrep;
 use Moo;
 use warnings;
-use File::Basename;
+use File::Basename ();
 use Time::localtime;
 use Carp;
 
@@ -26,15 +26,15 @@ has version => (
 );
 
 # Returns the basename of the file_name field
-sub basename() {
-    my ($self) = _@;
-    basename($self->file_name)
+sub basename {
+    my ($self) = @_;
+    File::Basename::basename($self->file_name)
 }
 
 # if the file already has an extension, assume it's what the user wanted and leave it alone.
 # otherwise append the new extension.
 sub out_path {
-    my ($self, $force_ext) = _@;
+    my ($self, $force_ext) = @_;
     
     if (!$force_ext && $self->file_name =~ m/\.\w+$/) {
         return $self->file_name;
@@ -46,12 +46,12 @@ sub out_path {
 # Returns the "pretty name" of the file_name field.
 # Pretty name here refers to package/class name format, i.e. PascalCase as opposed to snake_case.
 sub pretty_name() {
-    my ($self) = _@;
-    $self->basename =~ s/(^|_)(\w)/\U\2/gr
+    my ($self) = @_;
+    $self->basename =~ s/(^|_)(\w)/\U$2/gr
 }
 
 sub vars {
-    my ($self) = _@;
+    my ($self) = @_;
 
     {
         basename    => $self->basename,
@@ -61,6 +61,8 @@ sub vars {
     }
 }
 
+
+1;
 __END__
 =head1 File Prep
 A class for preparing the file name to become the variables used as input for the templating engine.
