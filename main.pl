@@ -20,8 +20,10 @@ GetOptions (
     stdout                  => \my $want_stdout,
 );
 
-# if no type was explicitly used, default to "file".
-@files = @ARGV unless @classes || @files || @modules || @scripts;
+# Collect any leftovers in the files array.
+# This is done to cover cases like `perltouch foo bar baz --class bing`,
+# where only 'bing' is a class and the rest are unnamed.
+push @files, @ARGV;
 
 my $template = Template->new({
     INCLUDE_PATH => './templates'
