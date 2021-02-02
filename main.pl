@@ -9,20 +9,21 @@ use Time::localtime;
 use autodie;
 
 use Util;
+use FilePrep;
 
 use constant {
     CLASS_T     => 'class',
     FILE_T      => 'file',
     MODULE_T    => 'module',
     SCRIPT_T    => 'script',
-}
+};
 
 my %template_and_extensions = (
     &CLASS_T    => ['class.pm.tt', '.pm'],
     &FILE_T     => ['file.pl.tt', '.pl'],
     &MODULE_T   => ['module.pm.tt', '.pm'],
     &SCRIPT_T   => ['file.pl.tt', ''],
-)
+);
 
 my $template_type;
 
