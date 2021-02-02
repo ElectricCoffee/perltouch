@@ -32,6 +32,7 @@ GetOptions (
     file                => sub { $template_type = FILE_T   },
     'package|module'    => sub { $template_type = MODULE_T },
     script              => sub { $template_type = SCRIPT_T },
+    stdout              => \my $want_stdout,
     force_ext           => \my $force_ext,
 );
 
@@ -49,9 +50,15 @@ for my $file (@ARGV) {
         my $prepped = FilePrep->new(file_name => $file, file_ext => $temp_ext);
         my $path = $prepped->out_path($force_ext);
 
-        say "Writing $path..."
-        $template->process($temp_f, $prepped->vars, $path) 
-            or warn "Could not write $path!";
+        if ($want_stdout) {
+            $template->process($temp_f, $prepped->vars);
+        } else {
+            say "Writing $path...";
+            $template->process($temp_f, $prepped->vars, $path)
+                or warn "Could not write $path!";
+        }
+    } else {
+        say "Skipping $file...";
     }
 }
 
