@@ -14,3 +14,4 @@ This new version also has the ability to create class and package files by simpl
 
 - Moo
 - Template
+- Test::More
