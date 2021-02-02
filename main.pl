@@ -11,56 +11,49 @@ use autodie;
 use Util;
 use FilePrep;
 
-use constant {
-    CLASS_T     => 'class',
-    FILE_T      => 'file',
-    MODULE_T    => 'module',
-    SCRIPT_T    => 'script',
-};
-
-my %template_and_extensions = (
-    &CLASS_T    => ['class.pm.tt', '.pm'],
-    &FILE_T     => ['file.pl.tt', '.pl'],
-    &MODULE_T   => ['module.pm.tt', '.pm'],
-    &SCRIPT_T   => ['file.pl.tt', ''],
-);
-
-my $template_type;
-
 GetOptions (
-    class               => sub { $template_type = CLASS_T  },
-    file                => sub { $template_type = FILE_T   },
-    'package|module'    => sub { $template_type = MODULE_T },
-    script              => sub { $template_type = SCRIPT_T },
-    stdout              => \my $want_stdout,
-    force_ext           => \my $force_ext,
+    'class=s{,}'            => \my @classes,
+    'file=s{,}'             => \my @files,
+    'package|module=s{,}'   => \my @modules,
+    'script=s{,}'           => \my @scripts,
+    force_ext               => \my $force_ext,
+    stdout                  => \my $want_stdout,
 );
 
-$template_type ||= FILE_T;
+# if no type was explicitly used, default to "file".
+@files = @ARGV unless @classes || @files || @modules || @scripts;
 
 my $template = Template->new({
     INCLUDE_PATH => './templates'
 });
 
-my ($temp_f, $temp_ext) = $template_and_extensions{$template_type}->@*;
+# TODO: find a better place for this sub.
+sub render {
+    my ($temp_f, $temp_ext, @files) = @_;
 
-for my $file (@ARGV) {
-    # if the file doesn't already exist or the user wishes to overwrite it
-    if (! -e $file || Util::prompt("The file $file already exists. Overwrite it?")) {
-        my $prepped = FilePrep->new(file_name => $file, file_ext => $temp_ext);
-        my $path = $prepped->out_path($force_ext);
+    for my $file (@files) {
+        # if the file doesn't already exist or the user wishes to overwrite it
+        if (! -e $file || Util::prompt("The file $file already exists. Overwrite it?")) {
+            my $prepped = FilePrep->new(file_name => $file, file_ext => $temp_ext);
+            my $path = $prepped->out_path($force_ext);
 
-        if ($want_stdout) {
-            $template->process($temp_f, $prepped->vars);
+            if ($want_stdout) {
+                $template->process($temp_f, $prepped->vars);
+            } else {
+                say "Writing $path...";
+                $template->process($temp_f, $prepped->vars, $path, { binmode => ':raw' })
+                    or warn "Could not write $path!";
+            }
         } else {
-            say "Writing $path...";
-            $template->process($temp_f, $prepped->vars, $path, { binmode => ':raw' })
-                or warn "Could not write $path!";
+            say "Skipping $file...";
         }
-    } else {
-        say "Skipping $file...";
     }
 }
+
+render 'class.pm.tt'  , '.pm', @classes;
+render 'file.pl.tt'   , '.pl', @files;
+render 'modules.pl.tt', '.pm', @modules;
+render 'file.pl.tt'   , ''   , @scripts;
 
 __END__
 =head1 perltouch
