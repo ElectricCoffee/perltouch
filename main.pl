@@ -54,7 +54,7 @@ for my $file (@ARGV) {
             $template->process($temp_f, $prepped->vars);
         } else {
             say "Writing $path...";
-            $template->process($temp_f, $prepped->vars, $path)
+            $template->process($temp_f, $prepped->vars, $path, { binmode => ':raw' })
                 or warn "Could not write $path!";
         }
     } else {
