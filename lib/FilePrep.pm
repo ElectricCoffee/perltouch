@@ -28,7 +28,7 @@ has version => (
 # Returns the basename of the file_name field
 sub basename {
     my ($self) = @_;
-    File::Basename::basename($self->file_name)
+    return File::Basename::basename($self->file_name);
 }
 
 # if the file already has an extension, assume it's what the user wanted and leave it alone.
@@ -39,7 +39,7 @@ sub out_path {
     if (!$force_ext && $self->file_name =~ m/\.\w+$/) {
         return $self->file_name;
     } else {
-        $self->file_name . $self->file_ext;
+        return $self->file_name . $self->file_ext;
     }
 }
 
@@ -53,12 +53,12 @@ sub pretty_name() {
 sub vars {
     my ($self) = @_;
 
-    {
+    return {
         basename    => $self->basename,
         pretty_name => $self->pretty_name,
         version     => $self->version,
         year        => $self->year,
-    }
+    };
 }
 
 
