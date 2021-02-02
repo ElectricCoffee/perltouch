@@ -32,11 +32,11 @@ sub render {
     my ($temp_f, $temp_ext, @files) = @_;
 
     for my $file (@files) {
-        # if the file doesn't already exist or the user wishes to overwrite it
-        if (! -e $file || Util::prompt("The file $file already exists. Overwrite it?")) {
-            my $prepped = FilePrep->new(file_name => $file, file_ext => $temp_ext);
-            my $path = $prepped->out_path($force_ext);
+        my $prepped = FilePrep->new(file_name => $file, file_ext => $temp_ext);
+        my $path = $prepped->out_path($force_ext);
 
+        # if the file doesn't already exist or the user wishes to overwrite it
+        if (! -e $path || Util::prompt("The file $path already exists. Overwrite it?")) {
             if ($want_stdout) {
                 $template->process($temp_f, $prepped->vars);
             } else {
@@ -45,7 +45,7 @@ sub render {
                     or warn "Could not write $path!";
             }
         } else {
-            say "Skipping $file...";
+            say "Skipping $path due to collision...";
         }
     }
 }
