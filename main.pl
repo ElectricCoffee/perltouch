@@ -1,4 +1,4 @@
-#!/usr/bin/env/perl
+#!/usr/bin/env perl
 
 use v5.28;
 use warnings;
