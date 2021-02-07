@@ -7,6 +7,7 @@ use Getopt::Long;
 use Template;
 use Time::localtime;
 use autodie;
+use Carp;
 
 use Util;
 use FilePrep;
@@ -44,7 +45,7 @@ sub render {
             } else {
                 say "Writing $path...";
                 $template->process($temp_f, $prepped->vars, $path, { binmode => ':raw' })
-                    or warn "Could not write $path!";
+                    or carp "Could not write $path!";
             }
         } else {
             say "Skipping $path due to collision...";
